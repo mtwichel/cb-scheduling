@@ -1,0 +1,20 @@
+<mat-card>
+  <mat-card-header>
+    <mat-card-title>Roster</mat-card-title>
+    <mat-card-subtitle></mat-card-subtitle>
+  </mat-card-header>
+  <mat-card-content>
+  <mat-accordion>
+    <mat-expansion-panel *ngFor="let entry of roster">
+        <mat-expansion-panel-header>
+            <mat-panel-title>
+                {{entry.firstName}} {{entry.lastName}}
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+          <p>{{entry.phoneNumber | phone}}</p>
+          <p>{{entry.email}}</p>
+          <p>Title: {{entry.title}}</p>
+      </mat-expansion-panel>
+    </mat-accordion>
+  </mat-card-content>
+</mat-card>

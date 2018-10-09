@@ -1,0 +1,6 @@
+<mat-toolbar color="primary">City Brew Scheduling
+  <button mat-button [routerLink]="['/home']" routerLinkActive="router-link-active" >Home</button>
+  <button mat-button [routerLink]="['/roster']">Roster</button>
+  <button mat-button>Schedule</button>
+  <button mat-button (click)="auth.logout()">Logout</button>
+</mat-toolbar>

@@ -1,0 +1,16 @@
+<!-- <mat-form-field>
+    <mat-select [(value)]="selected">
+    <div *ngIf="stores | async as stores">
+      <mat-option *ngFor="let item of stores.stores" value="{{item}}">{{item}}</mat-option>
+    </div>
+  </mat-select>
+</mat-form-field> -->
+<div *ngIf="selected; else loading">
+  <div *ngIf="rosterResults | async as rosterResults">
+    <app-roster [roster]="rosterResults[0].roster"></app-roster>
+  </div>
+</div>
+
+<ng-template #loading>
+  <mat-spinner mode="indeterminate">
+</mat-spinner></ng-template>
