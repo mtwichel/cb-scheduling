@@ -1,10 +1,13 @@
 import { Component, OnInit } from '@angular/core';
-import { Time } from '@angular/common';
+import { AngularFirestore } from 'angularfire2/firestore';
+import { AuthService } from '../auth.service';
+import { Observable, Subject } from 'rxjs';
+
 
 export interface Shift {
   date: Date;
-  beginTime: Date;
-  endTime: Date;
+  beginTime: any;
+  endTime: any;
 }
 
 @Component({
@@ -15,21 +18,33 @@ export interface Shift {
 export class MyShiftsComponent implements OnInit {
 
   displayedColumns: string[] = ['dayOfWeek', 'date', 'shift', 'hours'];
-  shifts: Shift[] = [
-    {date: new Date('5/30/18'), beginTime: new Date('5/30/18 6:00 pm'), endTime: new Date('5/30/18 10:00 pm'), },
-    {date: new Date('5/31/18'), beginTime: new Date('5/30/18 4:00 pm'), endTime: new Date('5/30/18 10:30 pm'), },
-    {date: new Date('6/1/18'), beginTime: new Date('5/30/18 6:00 pm'), endTime: new Date('5/30/18 10:15 pm'), },
-    {date: new Date('6/2/18'), beginTime: new Date('5/30/18 6:00 pm'), endTime: new Date('5/30/18 10:00 pm'), },
-    {date: new Date('6/3/18'), beginTime: new Date('5/30/18 6:00 pm'), endTime: new Date('5/30/18 10:00 pm'), },
-    {date: new Date('6/4/18'), beginTime: new Date('5/30/18 6:00 pm'), endTime: new Date('5/30/18 10:00 pm'), },
-  ];
-  constructor() {}
+  shifts$: Observable<Shift[]>;
+  totalHours$: Subject<number> = new Subject<number>();
+  totalHours: number;
 
-  getTotalHours() {
-    return this.shifts.map(t => (t.endTime.valueOf() - t.beginTime.valueOf()) / 3600000).reduce((acc, value) => acc + value, 0);
-  }
+  constructor(
+    private db: AngularFirestore,
+    private auth: AuthService,
+    ) {}
 
   ngOnInit() {
+    this.auth.user.subscribe(user => {
+      if (user) {
+        const curr = new Date;
+        const first = curr.getDate() - 1 - curr.getDay();
+        const last = first + 6;
+        console.log(`${new Date(curr.setDate(first))} , ${new Date(curr.setDate(last))}`);
+        this.shifts$ = this.db.collection(`users/${user.uid}/shifts`, ref => ref
+          .where('date', '>=', new Date(new Date(curr.setDate(first)).setHours(0, 0, 0, 0)))
+          .where('date', '<=', new Date(new Date(curr.setDate(last)).setHours(0, 0, 0, 0)))
+          .orderBy('date', 'asc')).valueChanges() as Observable<Shift[]>;
+        this.shifts$.subscribe(shifts => {
+          const total = shifts.map(t => (t.endTime.toDate().valueOf() - t.beginTime.toDate().valueOf()) / 3600000).reduce((acc, value) => acc + value, 0);
+          // this.totalHours$.next(total);
+          this.totalHours = total;
+        });
+      }
+    });
   }
 
 }

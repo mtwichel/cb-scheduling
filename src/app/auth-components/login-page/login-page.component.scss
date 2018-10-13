@@ -1,0 +1,13 @@
+.form-field {
+    margin: 5px;
+}
+.main-div{
+    display: block;
+    max-width: 300px;
+    margin: 15px auto;
+}
+
+:host {
+    align-self: center;
+    position: relative;
+}

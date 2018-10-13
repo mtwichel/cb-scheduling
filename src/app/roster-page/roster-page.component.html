@@ -5,10 +5,8 @@
     </div>
   </mat-select>
 </mat-form-field> -->
-<div *ngIf="selected; else loading">
-  <div *ngIf="rosterResults | async as rosterResults">
-    <app-roster [roster]="rosterResults[0].roster"></app-roster>
-  </div>
+  <div *ngIf="store$ | async as store; else loading">
+    <app-roster [storeNum]="store"></app-roster>
 </div>
 
 <ng-template #loading>

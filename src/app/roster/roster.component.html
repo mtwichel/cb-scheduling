@@ -5,7 +5,8 @@
   </mat-card-header>
   <mat-card-content>
   <mat-accordion>
-    <mat-expansion-panel *ngFor="let entry of roster">
+    <div *ngIf="roster$ | async as roster">
+    <mat-expansion-panel *ngFor="let entry of roster[0].roster">
         <mat-expansion-panel-header>
             <mat-panel-title>
                 {{entry.firstName}} {{entry.lastName}}
@@ -15,6 +16,7 @@
           <p>{{entry.email}}</p>
           <p>Title: {{entry.title}}</p>
       </mat-expansion-panel>
+    </div>
     </mat-accordion>
   </mat-card-content>
 </mat-card>

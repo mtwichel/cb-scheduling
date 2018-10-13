@@ -5,17 +5,20 @@ import * as firebase from 'firebase/app';
 
 import { Observable } from 'rxjs';
 import { MatSnackBar } from '@angular/material/snack-bar';
-// import { ForgotPasswordDialogComponent } from '../../components/auth-components/forgot-password-dialog/forgot-password-dialog.component';
+import { ForgotPasswordDialogComponent } from './auth-components/forgot-password-dialog/forgot-password-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
+import { Router } from '@angular/router';
 
 @Injectable()
 export class AuthService {
   user: Observable<firebase.User>;
+  redirectUrl: string;
 
   constructor(
     private firebaseAuth: AngularFireAuth,
     public snackBar: MatSnackBar,
-    public dialog: MatDialog) {
+    public dialog: MatDialog,
+    private router: Router) {
     this.user = firebaseAuth.authState;
   }
 
@@ -45,17 +48,25 @@ export class AuthService {
       .auth
       .signInWithEmailAndPassword(email, password)
       .then(value => {
-        console.log('Nice, it worked!');
+        console.log(`Redirect url:${this.redirectUrl}`);
+        this.router.navigate([`${this.redirectUrl}`]);
       })
       .catch(err => {
-        console.log('Something went wrong:', err.message);
+        console.log('Something went wrong:', err.code);
+        if (err.code === 'auth/wrong-password') {
+          this.snackBar.open(`Wrong Email or Password. Please Try Again.`, null, {
+            duration: 8000,
+          });
+        }
       });
   }
 
   logout() {
     this.firebaseAuth
       .auth
-      .signOut();
+      .signOut().then(() => {
+        this.router.navigate([`/login`]);
+      });
   }
 
   resetPassword(email: string) {
@@ -72,15 +83,15 @@ export class AuthService {
   }
 
   forgotPassword(email: string) {
-    // this.dialog.open(ForgotPasswordDialogComponent, {
-    //   width: '250px',
-    //   data: { email: email }
-    // }).afterClosed().subscribe(result => {
-    //   console.log(result);
-    //   if (result) {
-    //     this.resetPassword(result);
-    //   }
-    // });
+    this.dialog.open(ForgotPasswordDialogComponent, {
+      width: '250px',
+      data: { email: email }
+    }).afterClosed().subscribe(result => {
+      console.log(result);
+      if (result) {
+        this.resetPassword(result);
+      }
+    });
   }
 
 }

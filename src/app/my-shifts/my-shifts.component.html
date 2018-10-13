@@ -1,38 +1,43 @@
 <mat-card>
   <mat-card-header>
     <mat-card-title>My Shifts</mat-card-title>
-    <mat-card-subtitle>{{shifts[0].date | date:'shortDate'}} - {{shifts[shifts.length-1].date | date:'shortDate'}}</mat-card-subtitle>
+    <mat-card-subtitle *ngIf="shifts$ | async as shifts"><div *ngIf="shifts">{{shifts[0].date.toDate() | date:'shortDate'}} - {{shifts[shifts.length-1].date.toDate() | date:'shortDate'}} </div></mat-card-subtitle>
   </mat-card-header>
   <mat-card-content>
+    <div *ngIf="shifts$ | async as shifts; else loading">
+      <table mat-table #table [dataSource]="shifts">
+        <ng-container matColumnDef="dayOfWeek">
+            <th mat-header-cell *matHeaderCellDef> Day </th>
+            <td mat-cell *matCellDef="let shift" class="bold"><div *ngIf="shift.date">{{shift.date.toDate() | date:'EEEE'}}</div> </td>
+            <td mat-footer-cell *matFooterCellDef></td>
+        </ng-container>
+        <ng-container matColumnDef="date">
+            <th mat-header-cell *matHeaderCellDef> Date </th>
+            <td mat-cell *matCellDef="let shift"><div *ngIf="shift.date">{{shift.date.toDate() | date:'shortDate'}}</div> </td>
+            <td mat-footer-cell *matFooterCellDef></td>
+        </ng-container>
+        <ng-container matColumnDef="shift">
+            <th mat-header-cell *matHeaderCellDef> Time </th>
+            <td mat-cell *matCellDef="let shift"><div *ngIf="shift.date">{{shift.beginTime.toDate() | date:'shortTime'}} -  {{shift.endTime.toDate() | date:'shortTime'}}</div></td>
+            <td mat-footer-cell *matFooterCellDef></td>
+        </ng-container>
+        <ng-container matColumnDef="hours">
+            <th mat-header-cell *matHeaderCellDef> Hours </th>
+            <td mat-cell *matCellDef="let shift"><div *ngIf="shift.date">{{
+              (shift.endTime.toDate().valueOf() - shift.beginTime.toDate().valueOf())/ 3600000
+            }} hours </div></td>
+            <td mat-footer-cell *matFooterCellDef class="bold">Total: {{totalHours}} hours</td>
+        </ng-container>
 
-    <table mat-table #table [dataSource]="shifts">
-      <ng-container matColumnDef="dayOfWeek">
-          <th mat-header-cell *matHeaderCellDef> Day </th>
-          <td mat-cell *matCellDef="let shift" class="bold"> {{shift.date | date:'EEEE'}} </td>
-          <td mat-footer-cell *matFooterCellDef></td>
-      </ng-container>
-      <ng-container matColumnDef="date">
-          <th mat-header-cell *matHeaderCellDef> Date </th>
-          <td mat-cell *matCellDef="let shift"> {{shift.date | date:'shortDate'}} </td>
-          <td mat-footer-cell *matFooterCellDef></td>
-      </ng-container>
-      <ng-container matColumnDef="shift">
-          <th mat-header-cell *matHeaderCellDef> Time </th>
-          <td mat-cell *matCellDef="let shift"> {{shift.beginTime | date:'shortTime'}} -  {{shift.endTime | date:'shortTime'}}</td>
-          <td mat-footer-cell *matFooterCellDef></td>
-      </ng-container>
-      <ng-container matColumnDef="hours">
-          <th mat-header-cell *matHeaderCellDef> Hours </th>
-          <td mat-cell *matCellDef="let shift"> {{
-            (shift.endTime.valueOf() - shift.beginTime.valueOf())/ 3600000
-          }} hours </td>
-          <td mat-footer-cell *matFooterCellDef class="bold">Total: {{getTotalHours()}} hours</td>
-      </ng-container>
-
-      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-      <tr mat-footer-row *matFooterRowDef="displayedColumns"></tr>
-    </table>
-  
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        <tr mat-footer-row *matFooterRowDef="displayedColumns"></tr>
+      </table>
+    </div>
   </mat-card-content>
 </mat-card>
+
+<ng-template #loading>
+    <mat-spinner mode="indeterminate">
+  </mat-spinner></ng-template>
+  

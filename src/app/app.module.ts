@@ -22,6 +22,15 @@ import { AngularFireAuthModule } from 'angularfire2/auth';
 import { RosterPageComponent } from './roster-page/roster-page.component';
 import { AuthService } from './auth.service';
 
+import { ResizableModule } from 'angular-resizable-element';
+import { ShiftEditorItemComponent } from './shift-editor-item/shift-editor-item.component';
+
+import { LoginPageComponent } from './auth-components/login-page/login-page.component';
+import { ForgotPasswordDialogComponent } from './auth-components/forgot-password-dialog/forgot-password-dialog.component';
+
+import { ReactiveFormsModule } from '@angular/forms';
+import { ServiceWorkerModule } from '@angular/service-worker';
+
 
 @NgModule({
   declarations: [
@@ -31,6 +40,9 @@ import { AuthService } from './auth.service';
     RosterComponent,
     PhonePipe,
     RosterPageComponent,
+    ShiftEditorItemComponent,
+    LoginPageComponent,
+    ForgotPasswordDialogComponent,
   ],
   imports: [
     BrowserModule,
@@ -40,8 +52,14 @@ import { AuthService } from './auth.service';
     AngularFireModule.initializeApp(firebaseConfig),
     AngularFirestoreModule,
     AngularFireAuthModule,
+    ResizableModule,
+    ReactiveFormsModule,
+    ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production }),
   ],
   providers: [AuthService],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
+  entryComponents: [
+    ForgotPasswordDialogComponent
+  ]
 })
 export class AppModule { }
