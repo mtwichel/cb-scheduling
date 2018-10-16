@@ -19,6 +19,7 @@ export const firebaseConfig = environment.firebaseConfig;
 import { AngularFireModule } from 'angularfire2';
 import { AngularFirestoreModule } from 'angularfire2/firestore';
 import { AngularFireAuthModule } from 'angularfire2/auth';
+import { AngularFireMessagingModule } from 'angularfire2/messaging';
 import { RosterPageComponent } from './roster-page/roster-page.component';
 import { AuthService } from './auth.service';
 
@@ -30,6 +31,7 @@ import { ForgotPasswordDialogComponent } from './auth-components/forgot-password
 
 import { ReactiveFormsModule } from '@angular/forms';
 import { ServiceWorkerModule } from '@angular/service-worker';
+import { MessagingService } from './messenging.service';
 
 
 @NgModule({
@@ -52,11 +54,12 @@ import { ServiceWorkerModule } from '@angular/service-worker';
     AngularFireModule.initializeApp(firebaseConfig),
     AngularFirestoreModule,
     AngularFireAuthModule,
+    AngularFireMessagingModule,
     ResizableModule,
     ReactiveFormsModule,
     ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production }),
   ],
-  providers: [AuthService],
+  providers: [AuthService, MessagingService],
   bootstrap: [AppComponent],
   entryComponents: [
     ForgotPasswordDialogComponent

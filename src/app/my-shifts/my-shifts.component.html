@@ -8,7 +8,7 @@
       <table mat-table #table [dataSource]="shifts">
         <ng-container matColumnDef="dayOfWeek">
             <th mat-header-cell *matHeaderCellDef> Day </th>
-            <td mat-cell *matCellDef="let shift" class="bold"><div *ngIf="shift.date">{{shift.date.toDate() | date:'EEEE'}}</div> </td>
+            <td mat-cell *matCellDef="let shift" class="bold weekday-cell"><div *ngIf="shift.date">{{shift.date.toDate() | date:'EEEE'}}</div> </td>
             <td mat-footer-cell *matFooterCellDef></td>
         </ng-container>
         <ng-container matColumnDef="date">
