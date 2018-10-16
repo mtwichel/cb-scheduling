@@ -32,6 +32,13 @@ import { ForgotPasswordDialogComponent } from './auth-components/forgot-password
 import { ReactiveFormsModule } from '@angular/forms';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { MessagingService } from './messenging.service';
+import { CalendarModule, DateAdapter } from 'angular-calendar';
+import { adapterFactory } from 'angular-calendar/date-adapters/date-fns';
+import { CommonModule } from '@angular/common';
+import { DragAndDropModule } from 'angular-draggable-droppable';
+import { AvalibilityEditorComponent } from './avalibility-editor/avalibility-editor.component';
+import { AmazingTimePickerModule } from 'amazing-time-picker';
+
 
 
 @NgModule({
@@ -45,8 +52,10 @@ import { MessagingService } from './messenging.service';
     ShiftEditorItemComponent,
     LoginPageComponent,
     ForgotPasswordDialogComponent,
+    AvalibilityEditorComponent,
   ],
   imports: [
+    CommonModule,
     BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,
@@ -58,6 +67,13 @@ import { MessagingService } from './messenging.service';
     ResizableModule,
     ReactiveFormsModule,
     ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production }),
+    CalendarModule.forRoot({
+      provide: DateAdapter,
+      useFactory: adapterFactory
+    }),
+    DragAndDropModule,
+    AmazingTimePickerModule,
+
   ],
   providers: [AuthService, MessagingService],
   bootstrap: [AppComponent],

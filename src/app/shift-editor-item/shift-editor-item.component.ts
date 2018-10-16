@@ -1,55 +1,75 @@
-import { Component, OnInit } from '@angular/core';
-import { ResizeEvent } from 'angular-resizable-element';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
+import {CalendarEvent, CalendarEventTimesChangedEvent, CalendarView } from 'angular-calendar';
+import { Subject } from 'rxjs';
 
 @Component({
   selector: 'app-shift-editor-item',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './shift-editor-item.component.html',
-  styleUrls: ['./shift-editor-item.component.scss']
+  styles: [
+    `
+      .drag-active {
+        position: relative;
+        z-index: 1;
+        pointer-events: none;
+      }
+      .drag-over {
+        background-color: #eee;
+      }
+    `
+  ]
 })
-export class ShiftEditorItemComponent implements OnInit {
+export class ShiftEditorItemComponent {
+  CalendarView = CalendarView;
+  view = CalendarView.Day;
 
-  public style: object = {};
-  displayedColumns: string[] = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
-  dataSource = [
-    {none: 'none'},
-    {none: 'none'},
-    {none: 'none'},
-    {none: 'none'},
-    {none: 'none'},
-    {none: 'none'},
-    {none: 'none'},
-    {none: 'none'},
-    {none: 'none'},
-    {none: 'none'},
+  externalEvents: CalendarEvent[] = [
+    {
+      title: 'Event 1',
+      start: new Date(),
+      color: {
+        primary: '#ad2121',
+        secondary: '#FAE3E3'
+      },
+      draggable: true
+    },
+    {
+      title: 'Event 2',
+      start: new Date(),
+      color: {
+        primary: '#1e90ff',
+        secondary: '#D1E8FF'
+      },
+      draggable: true
+    }
   ];
 
-  constructor() { }
+  refresh = new Subject<void>();
+  viewDate: Date = new Date();
+  events: CalendarEvent[] = [];
 
-  ngOnInit() {
-  }
-
-  validate(event: ResizeEvent): boolean {
-    const MIN_DIMENSIONS_PX = 10;
-    if (
-      event.rectangle.width &&
-      event.rectangle.height &&
-      (event.rectangle.width < MIN_DIMENSIONS_PX ||
-        event.rectangle.height < MIN_DIMENSIONS_PX)
-    ) {
-      return false;
+  eventDropped({
+    event,
+    newStart,
+    newEnd
+  }: CalendarEventTimesChangedEvent): void {
+    const externalIndex = this.externalEvents.indexOf(event);
+    console.log(externalIndex, newStart, newEnd);
+    if (externalIndex > -1) {
+      this.externalEvents.splice(externalIndex, 1);
+      this.events.push(event);
     }
-    return true;
+    event.start = newStart;
+    if (newEnd) {
+      event.end = newEnd;
+    }
+    this.events = [...this.events];
   }
 
-  onResizeEnd(event: ResizeEvent): void {
-    this.style = {
-      position: 'absolute',
-      left: `${event.rectangle.left}px`,
-      top: `${event.rectangle.top}px`,
-      width: `${event.rectangle.width}px`,
-      height: `${event.rectangle.height}px`
-    };
-    console.log(`top: ${event.rectangle.top}, bottom: ${event.rectangle.bottom}, height: ${Math.floor(event.rectangle.height / 50)}`);
+  externalDrop(event: CalendarEvent) {
+    if (this.externalEvents.indexOf(event) === -1) {
+      this.events = this.events.filter(iEvent => iEvent !== event);
+      this.externalEvents.push(event);
+    }
   }
-
 }
