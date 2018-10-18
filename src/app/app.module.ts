@@ -37,8 +37,7 @@ import { adapterFactory } from 'angular-calendar/date-adapters/date-fns';
 import { CommonModule } from '@angular/common';
 import { DragAndDropModule } from 'angular-draggable-droppable';
 import { AvalibilityEditorComponent } from './avalibility-editor/avalibility-editor.component';
-import { AmazingTimePickerModule } from 'amazing-time-picker';
-
+import {NgxMaterialTimepickerModule} from 'ngx-material-timepicker';
 
 
 @NgModule({
@@ -72,7 +71,7 @@ import { AmazingTimePickerModule } from 'amazing-time-picker';
       useFactory: adapterFactory
     }),
     DragAndDropModule,
-    AmazingTimePickerModule,
+    NgxMaterialTimepickerModule.forRoot(),
 
   ],
   providers: [AuthService, MessagingService],

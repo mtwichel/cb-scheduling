@@ -60,7 +60,7 @@ export class CustomTitleBarComponent implements OnInit {
                 },
                 {
                   text: 'Avalibility',
-                  url: ''
+                  url: '/avalibility'
                 },
               ];
               break;
