@@ -15,6 +15,7 @@ import { MatRadioModule } from '@angular/material/radio';
 import { MatTableModule } from '@angular/material/table';
 import { MatExpansionModule } from '@angular/material/expansion';
 import {MatSelectModule} from '@angular/material/select';
+import { MatGridListModule } from '@angular/material/grid-list';
 
 
 
@@ -39,6 +40,7 @@ import { NgModule } from '@angular/core';
         MatTableModule,
         MatExpansionModule,
         MatSelectModule,
+        MatGridListModule,
     ],
     exports: [
         MatButtonModule,
@@ -58,6 +60,7 @@ import { NgModule } from '@angular/core';
         MatTableModule,
         MatExpansionModule,
         MatSelectModule,
+        MatGridListModule,
     ],
 })
 export class MaterialModule { }

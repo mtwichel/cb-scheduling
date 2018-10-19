@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, FormArray } from '@angular/forms';
+import { AngularFirestore } from 'angularfire2/firestore';
+import { AuthService } from '../auth.service';
 
 @Component({
   selector: 'app-avalibility-editor',
@@ -9,8 +11,17 @@ import { FormGroup, FormBuilder, FormArray } from '@angular/forms';
 export class AvalibilityEditorComponent implements OnInit {
 
   myForm: FormGroup;
+  days = [
+    'sunday',
+    'monday',
+    'tuesday',
+    'wednesday',
+    'thursday',
+    'friday',
+    'saturday'
+  ];
 
-  constructor(private fb: FormBuilder) { }
+  constructor(private fb: FormBuilder, private db: AngularFirestore, private auth: AuthService) { }
 
   ngOnInit() {
     this.myForm = this.fb.group({
@@ -22,29 +33,30 @@ export class AvalibilityEditorComponent implements OnInit {
       fridayRanges: this.fb.array([]),
       saturdayRanges: this.fb.array([]),
     });
+    this.setCurrentValue();
   }
 
+  getRangesFromDay(day) {
+    switch (day) {
+      case 0:
+        return this.myForm.get('sundayRanges') as FormArray;
+      case 1:
+        return this.myForm.get('mondayRanges') as FormArray;
+      case 2:
+        return this.myForm.get('tuesdayRanges') as FormArray;
+      case 3:
+        return this.myForm.get('wednesdayRanges') as FormArray;
+      case 4:
+        return this.myForm.get('thursdayRanges') as FormArray;
+      case 5:
+        return this.myForm.get('fridayRanges') as FormArray;
+      case 6:
+        return this.myForm.get('saturdayRanges') as FormArray;
+    }
+  }
 
-  get sundayRanges() {
-    return this.myForm.get('sundayRanges') as FormArray;
-  }
-  get mondayRanges() {
-    return this.myForm.get('mondayRanges') as FormArray;
-  }
-  get tuesdayRanges() {
-    return this.myForm.get('tuesdayRanges') as FormArray;
-  }
-  get wednesdayRanges() {
-    return this.myForm.get('wednesdayRanges') as FormArray;
-  }
-  get thursdayRanges() {
-    return this.myForm.get('thursdayRanges') as FormArray;
-  }
-  get fridayRanges() {
-    return this.myForm.get('fridayRanges') as FormArray;
-  }
-  get saturdayRanges() {
-    return this.myForm.get('saturdayRanges') as FormArray;
+  getFormArrayName(day): string {
+    return `${this.days[day]}Ranges`;
   }
 
   addTimeRange(day) {
@@ -52,56 +64,27 @@ export class AvalibilityEditorComponent implements OnInit {
       startTime: [],
       endTime: [],
     });
-
-    switch (day) {
-      case 'sunday':
-      this.sundayRanges.push(range);
-      break;
-      case 'monday':
-      this.mondayRanges.push(range);
-      break;
-      case 'tuesday':
-      this.tuesdayRanges.push(range);
-      break;
-      case 'wednesday':
-      this.wednesdayRanges.push(range);
-      break;
-      case 'thursday':
-      this.thursdayRanges.push(range);
-      break;
-      case 'friday':
-      this.fridayRanges.push(range);
-      break;
-      case 'saturday':
-      this.saturdayRanges.push(range);
-      break;
-    }
+    this.getRangesFromDay(day).push(range);
   }
 
   deleteTimeRange(day, i) {
-    switch (day) {
-      case 'sunday':
-      this.sundayRanges.removeAt(i);
-      break;
-      case 'monday':
-      this.mondayRanges.removeAt(i);
-      break;
-      case 'tuesday':
-      this.tuesdayRanges.removeAt(i);
-      break;
-      case 'wednesday':
-      this.wednesdayRanges.removeAt(i);
-      break;
-      case 'thursday':
-      this.thursdayRanges.removeAt(i);
-      break;
-      case 'friday':
-      this.fridayRanges.removeAt(i);
-      break;
-      case 'saturday':
-      this.saturdayRanges.removeAt(i);
-      break;
-    }
+    this.getRangesFromDay(day).removeAt(i);
+  }
+
+  async save() {
+    this.auth.user.subscribe(user => {
+      this.db.doc(`users/${user.uid}`).update({ 'avalibility': this.myForm.value });
+    });
+  }
+
+  async setCurrentValue() {
+    this.auth.user.subscribe(user => {
+      console.log(`${user.uid}`);
+      this.db.doc(`users/${user.uid}`).get().subscribe(doc => {
+        console.log(doc.data().avalibility);
+        this.myForm.setValue(doc.data().avalibility);
+      });
+    });
   }
 
 }
